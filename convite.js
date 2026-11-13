@@ -7,6 +7,7 @@
   const CRESCIMENTO_SIM = 0.05;
   const ESPERA_SIM_MS = 850;
   const CORACOES = 22;
+  const CLIQUES_PARA_VIRAR_SIM = 5;
 
   const DICAS = [
     'Tem certeza?',
@@ -63,8 +64,8 @@
     return { x: candidato.left - origem.left, y: candidato.top - origem.top };
   }
 
-  function comemorar() {
-    const { left, top, width, height } = sim.getBoundingClientRect();
+  function comemorar(botao) {
+    const { left, top, width, height } = botao.getBoundingClientRect();
 
     for (let i = 0; i < CORACOES; i++) {
       const coracao = document.createElement('span');
@@ -89,18 +90,38 @@
     }
   }
 
+  function aceitar(botao) {
+    if (movimentoReduzido) {
+      location.href = sim.href;
+      return;
+    }
+    comemorar(botao);
+    setTimeout(() => { location.href = sim.href; }, ESPERA_SIM_MS);
+  }
+
+  // Depois de insistir no "Não" algumas vezes, ele desiste e vira mais um "Sim".
+  function virarSim() {
+    nao.textContent = 'Sim';
+    nao.classList.add('virou-sim');
+    dica.textContent = 'Agora até ele concorda.';
+  }
+
   nao.addEventListener('click', () => {
+    if (nao.classList.contains('virou-sim')) {
+      aceitar(nao);
+      return;
+    }
     aplicarDeslocamento(novoDeslocamento());
     dica.textContent = DICAS[cliques % DICAS.length];
     cliques += 1;
     sim.style.setProperty('--escala', Math.min(1 + cliques * CRESCIMENTO_SIM, ESCALA_MAXIMA_SIM));
+    if (cliques >= CLIQUES_PARA_VIRAR_SIM) virarSim();
   });
 
   sim.addEventListener('click', (evento) => {
     if (movimentoReduzido) return;
     evento.preventDefault();
-    comemorar();
-    setTimeout(() => { location.href = sim.href; }, ESPERA_SIM_MS);
+    aceitar(sim);
   });
 
   // O layout muda ao girar a tela: devolve o "Não" ao lugar para ele não ficar fora dela.

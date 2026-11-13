@@ -126,6 +126,16 @@ h1, h2 {
   transition: transform .45s cubic-bezier(.3, 1.35, .5, 1);
 }
 
+/* O "Não" que desistiu: visual do "Sim", mas fica onde parou. */
+.botao-nao.virou-sim {
+  color: #fff;
+  background: linear-gradient(180deg, var(--rosa), var(--rosa-escura));
+  border-color: transparent;
+  box-shadow: 0 10px 32px rgba(200, 16, 46, .5), inset 0 1px 0 rgba(255, 255, 255, .25);
+}
+
+.botao-nao.virou-sim:hover { filter: brightness(1.12); }
+
 .dica {
   min-height: 1.5em;
   margin-top: 14px;
